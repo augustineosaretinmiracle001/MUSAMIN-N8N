@@ -30,9 +30,15 @@ services:
       - MYSQL_PASSWORD=Musamin@70
     ports:
       - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
     networks:
       - app-network
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
