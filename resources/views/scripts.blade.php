@@ -356,29 +356,31 @@
             btnText.textContent = 'Generating...';
             spinner.classList.remove('hidden');
             
-            fetch('/generate-script', {
+            fetch('https://n8n.musamin.app/webhook/trigger-generation', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify({
+                    user_uuid: data.user_uuid,
+                    type: data.type,
+                    topic: data.parameters.topic,
+                    instructions: data.parameters.instructions,
+                    triggered_at: new Date().toISOString()
+                })
             })
             .then(response => response.json())
             .then(result => {
-                if (result.success) {
-                    closeGenerateModal();
-                    showNotification('Script generation triggered! Check back in a few minutes.', 'success');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 3000);
-                } else {
-                    showNotification('Error triggering generation', 'error');
-                }
+                console.log('Script generation triggered:', result);
+                closeGenerateModal();
+                showNotification('Script generation started! Check back in a few minutes.', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 3000);
             })
             .catch(error => {
                 console.error('Error:', error);
-                showNotification('Error triggering generation', 'error');
+                showNotification('Error connecting to n8n. Please try again.', 'error');
             })
             .finally(() => {
                 btnText.textContent = 'Generate Script';
