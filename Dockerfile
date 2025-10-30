@@ -34,7 +34,7 @@ WORKDIR /var/www
 COPY composer.json composer.lock ./
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --optimize-autoloader --no-interaction --verbose
 
 # Copy package files
 COPY package.json package-lock.json ./
