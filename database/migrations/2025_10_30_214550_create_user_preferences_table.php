@@ -8,20 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('scripts', function (Blueprint $table) {
+        Schema::create('user_preferences', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
-            $table->string('title');
-            $table->longText('content');
             $table->string('niche')->default('general');
-            $table->string('status')->default('pending');
-            $table->json('metadata')->nullable();
+            $table->string('tone')->default('neutral');
+            $table->string('style')->default('standard');
+            $table->string('target_audience')->nullable();
+            $table->text('custom_instructions')->nullable();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('scripts');
+        Schema::dropIfExists('user_preferences');
     }
 };

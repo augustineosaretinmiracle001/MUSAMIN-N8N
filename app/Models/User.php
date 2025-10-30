@@ -58,4 +58,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Script::class);
     }
+
+    public function preferences()
+    {
+        return $this->hasOne(UserPreference::class);
+    }
 }

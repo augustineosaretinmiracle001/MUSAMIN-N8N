@@ -7,7 +7,7 @@ services:
       - "3000:80"
     environment:
       - APP_ENV=production
-      - APP_DEBUG=true
+      - APP_DEBUG=false
       - APP_KEY=base64:ioxbXKw7LniLXzvrK7aTPulZ4XtlLx2mbcmyGo50CjA=
       - APP_URL=https://musamin.app
       - DB_CONNECTION=mysql
