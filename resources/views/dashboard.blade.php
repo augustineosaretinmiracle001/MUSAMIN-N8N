@@ -21,6 +21,9 @@
                 </svg>
                 Generate Script
             </button>
+            <button onclick="testN8nConnection()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+                Test n8n
+            </button>
             <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -349,7 +352,14 @@
             btnText.textContent = 'Generating...';
             spinner.classList.remove('hidden');
             
-            fetch('https://n8n.musamin.app/webhook/trigger-generation', {
+            // Try different n8n URLs - uncomment the working one:
+            // const n8nUrl = 'https://n8n.musamin.app/webhook/trigger-generation';
+            // const n8nUrl = 'http://167.86.109.10:5678/webhook/trigger-generation';
+            const n8nUrl = 'https://n8n.musamin.app/webhook/trigger-generation';
+            
+            console.log('Calling n8n webhook:', n8nUrl);
+            
+            fetch(n8nUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -372,13 +382,47 @@
                 }, 3000);
             })
             .catch(error => {
-                console.error('Error:', error);
-                showNotification('Error connecting to n8n. Please try again.', 'error');
+                console.error('n8n Connection Error:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    url: n8nUrl
+                });
+                showNotification(`n8n Error: ${error.message}. Check console for details.`, 'error');
             })
             .finally(() => {
                 // Reset button state
                 btnText.textContent = 'Generate Script';
                 spinner.classList.add('hidden');
+            });
+        }
+        
+        function testN8nConnection() {
+            const testUrl = 'https://n8n.musamin.app/webhook/trigger-generation';
+            console.log('Testing n8n connection to:', testUrl);
+            
+            fetch(testUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    test: true,
+                    timestamp: new Date().toISOString()
+                })
+            })
+            .then(response => {
+                console.log('n8n Response Status:', response.status);
+                console.log('n8n Response Headers:', response.headers);
+                return response.text();
+            })
+            .then(data => {
+                console.log('n8n Response Data:', data);
+                showNotification(`n8n Test: Status OK. Check console for details.`, 'success');
+            })
+            .catch(error => {
+                console.error('n8n Test Failed:', error);
+                showNotification(`n8n Test Failed: ${error.message}`, 'error');
             });
         }
         
