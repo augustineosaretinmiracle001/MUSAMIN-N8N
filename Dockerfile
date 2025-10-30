@@ -30,20 +30,17 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy composer files
-COPY composer.json composer.lock ./
+# Copy application code first
+COPY . .
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-# Copy package files
-COPY package.json package-lock.json ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 # Install Node dependencies and build assets
 RUN npm ci --only=production && npm run build && npm cache clean --force
 
-# Copy application code
-COPY . .
+# Run Laravel post-install commands
+RUN php artisan package:discover --ansi
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
