@@ -92,4 +92,32 @@ class ScriptController extends Controller
             'type' => $validated['type']
         ]);
     }
+
+    /**
+     * Show a specific script
+     */
+    public function show(Script $script): JsonResponse
+    {
+        // Check if user owns this script
+        if ($script->user_id !== request()->user()->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        return response()->json($script);
+    }
+
+    /**
+     * Delete a script
+     */
+    public function destroy(Script $script): JsonResponse
+    {
+        // Check if user owns this script
+        if ($script->user_id !== request()->user()->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $script->delete();
+
+        return response()->json(['success' => true, 'message' => 'Script deleted successfully']);
+    }
 }

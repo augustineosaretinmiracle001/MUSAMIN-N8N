@@ -94,7 +94,8 @@
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Topic</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Niche</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -113,14 +114,19 @@
                                             </div>
                                         </div>
                                         <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">{{ $script->topic }}</div>
-                                            <div class="text-sm text-gray-500">{{ Str::limit($script->script, 50) }}</div>
+                                            <div class="text-sm font-medium text-gray-900">{{ $script->title }}</div>
+                                            <div class="text-sm text-gray-500">{{ Str::limit($script->content, 50) }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        {{ ucfirst($script->niche) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        {{ $script->status === 'generated' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                        {{ $script->status === 'generated' ? 'bg-green-100 text-green-800' : ($script->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
                                         {{ ucfirst($script->status) }}
                                     </span>
                                 </td>
@@ -128,9 +134,9 @@
                                     {{ $script->created_at->diffForHumans() }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button class="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
-                                    <button class="text-gray-600 hover:text-gray-900 mr-3">Copy</button>
-                                    <button class="text-red-600 hover:text-red-900">Delete</button>
+                                    <button onclick="viewScript('{{ $script->id }}')" class="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
+                                    <button onclick="copyScript('{{ $script->content }}')" class="text-gray-600 hover:text-gray-900 mr-3">Copy</button>
+                                    <button onclick="deleteScript('{{ $script->id }}')" class="text-red-600 hover:text-red-900">Delete</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -150,4 +156,118 @@
             @endif
         </div>
     </div>
+
+    <!-- Script View Modal -->
+    <div id="scriptModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 id="modalTitle" class="text-lg font-semibold text-gray-900"></h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-6 overflow-y-auto max-h-[70vh]">
+                    <div id="modalContent" class="prose max-w-none"></div>
+                </div>
+                <div class="flex items-center justify-end space-x-3 p-6 border-t bg-gray-50">
+                    <button onclick="copyModalContent()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                        Copy Content
+                    </button>
+                    <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScriptContent = '';
+        
+        function viewScript(scriptId) {
+            fetch(`/api/scripts/${scriptId}`, {
+                headers: {
+                    'Authorization': 'Bearer ' + '{{ auth()->user()->createToken("dashboard")->plainTextToken }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(script => {
+                document.getElementById('modalTitle').textContent = script.title;
+                document.getElementById('modalContent').innerHTML = `
+                    <div class="mb-4">
+                        <span class="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full mb-2">
+                            ${script.niche}
+                        </span>
+                    </div>
+                    <div class="whitespace-pre-wrap">${script.content}</div>
+                `;
+                currentScriptContent = script.content;
+                document.getElementById('scriptModal').classList.remove('hidden');
+            })
+            .catch(error => {
+                alert('Error loading script');
+                console.error(error);
+            });
+        }
+        
+        function copyScript(content) {
+            navigator.clipboard.writeText(content).then(() => {
+                // Show success message
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('text-green-600');
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('text-green-600');
+                }, 2000);
+            });
+        }
+        
+        function copyModalContent() {
+            navigator.clipboard.writeText(currentScriptContent).then(() => {
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+        
+        function deleteScript(scriptId) {
+            if (confirm('Are you sure you want to delete this script?')) {
+                fetch(`/api/scripts/${scriptId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + '{{ auth()->user()->createToken("dashboard")->plainTextToken }}',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Error deleting script');
+                    }
+                });
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('scriptModal').classList.add('hidden');
+        }
+        
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
 </x-app-layout>

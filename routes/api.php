@@ -24,6 +24,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // Script management
     Route::get('/scripts', [App\Http\Controllers\Api\ScriptController::class, 'index']);
     Route::post('/scripts', [App\Http\Controllers\Api\ScriptController::class, 'store']);
+    Route::get('/scripts/{script}', [App\Http\Controllers\Api\ScriptController::class, 'show']);
+    Route::delete('/scripts/{script}', [App\Http\Controllers\Api\ScriptController::class, 'destroy']);
+});
+
+// Token generation (web auth)
+Route::middleware('auth:web')->group(function () {
+    Route::post('/generate-token', [App\Http\Controllers\SettingsController::class, 'generateToken']);
 });
 
 // n8n integration endpoints (UUID-based)
