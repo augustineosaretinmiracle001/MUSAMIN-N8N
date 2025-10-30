@@ -46,6 +46,7 @@ RUN npm run build
 RUN php artisan config:cache || true
 RUN php artisan route:cache || true
 RUN php artisan view:cache || true
+RUN php artisan migrate --force || true
 
 # Clean up Node dependencies
 RUN npm prune --production && npm cache clean --force
