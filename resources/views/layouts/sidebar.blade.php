@@ -32,8 +32,8 @@
     </div>
 
     <div class="relative group">
-        <a href="#" 
-           class="flex items-center justify-center w-12 h-12 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
+        <a href="{{ route('scripts') }}" 
+           class="flex items-center justify-center w-12 h-12 rounded-lg transition-colors {{ request()->routeIs('scripts') ? 'bg-indigo-100 text-indigo-600' : 'text-gray-600 hover:bg-gray-100' }}">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
             </svg>

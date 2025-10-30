@@ -1,8 +1,6 @@
 <x-app-layout>
-    <!-- Page Header -->
     <div class="flex items-center justify-between mb-8">
         <div class="flex items-center">
-            <!-- Mobile Menu Button -->
             <button onclick="toggleMobileMenu()" class="lg:hidden mr-4 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -10,159 +8,123 @@
             </button>
             
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-                <p class="text-gray-600 mt-1">Welcome back, {{ Auth::user()->name }}</p>
+                <h1 class="text-3xl font-bold text-gray-900">My Scripts</h1>
+                <p class="text-gray-600 mt-1">Manage all your generated scripts</p>
             </div>
         </div>
-        <div class="flex space-x-3">
-            <button onclick="generateScript()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                </svg>
-                Generate Script
-            </button>
-            <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                New Workflow
-            </button>
+        
+        <button onclick="generateScript()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            Generate New Script
+        </button>
+    </div>
+
+    <!-- Filter and Search -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                <div class="relative">
+                    <input type="text" id="searchInput" placeholder="Search scripts..." 
+                           class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                
+                <select id="nicheFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">All Niches</option>
+                    <option value="general">General</option>
+                    <option value="philosophy">Philosophy</option>
+                    <option value="technology">Technology</option>
+                    <option value="business">Business</option>
+                    <option value="lifestyle">Lifestyle</option>
+                    <option value="education">Education</option>
+                </select>
+                
+                <select id="statusFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="generated">Generated</option>
+                    <option value="failed">Failed</option>
+                </select>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-600">{{ Auth::user()->scripts()->count() }} total scripts</span>
+            </div>
         </div>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div class="flex items-center">
-                <div class="p-2 bg-blue-100 rounded-lg">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Workflows</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ Auth::user()->workflows()->count() }}</p>
-                </div>
+    <!-- Scripts Grid -->
+    <div id="scriptsContainer">
+        @if(Auth::user()->scripts()->count() > 0)
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach(Auth::user()->scripts()->latest()->get() as $script)
+                    <div class="script-card bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow" 
+                         data-niche="{{ $script->niche }}" data-status="{{ $script->status }}" data-title="{{ strtolower($script->title) }}">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    {{ ucfirst($script->niche) }}
+                                </span>
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                    {{ $script->status === 'generated' ? 'bg-green-100 text-green-800' : 
+                                       ($script->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                    {{ ucfirst($script->status) }}
+                                </span>
+                            </div>
+                            
+                            <div class="relative">
+                                <button onclick="toggleDropdown('{{ $script->id }}')" class="p-1 text-gray-400 hover:text-gray-600">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                    </svg>
+                                </button>
+                                <div id="dropdown-{{ $script->id }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
+                                    <button onclick="viewScript('{{ $script->id }}')" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        View Full Script
+                                    </button>
+                                    <button onclick="copyScript('{{ addslashes($script->content) }}')" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Copy Content
+                                    </button>
+                                    <button onclick="downloadScript('{{ $script->title }}', '{{ addslashes($script->content) }}')" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Download as TXT
+                                    </button>
+                                    <hr class="my-1">
+                                    <button onclick="deleteScript('{{ $script->id }}')" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                        Delete Script
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $script->title }}</h3>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ Str::limit($script->content, 120) }}</p>
+                        
+                        <div class="flex items-center justify-between text-sm text-gray-500">
+                            <span>{{ $script->created_at->diffForHumans() }}</span>
+                            <span>{{ Str::words($script->content, 0, '') ? count(explode(' ', $script->content)) : 0 }} words</span>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div class="flex items-center">
-                <div class="p-2 bg-green-100 rounded-lg">
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Active Workflows</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ Auth::user()->workflows()->where('status', 'active')->count() }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div class="flex items-center">
-                <div class="p-2 bg-purple-100 rounded-lg">
-                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Scripts</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ Auth::user()->scripts()->count() }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div class="flex items-center">
-                <div class="p-2 bg-yellow-100 rounded-lg">
-                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        @else
+            <div class="text-center py-12">
+                <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                </svg>
+                <h3 class="text-xl font-medium text-gray-900 mb-2">No scripts yet</h3>
+                <p class="text-gray-500 mb-6">Generate your first script to get started</p>
+                <button onclick="generateScript()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg flex items-center mx-auto">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                     </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Executions Today</p>
-                    <p class="text-2xl font-bold text-gray-900">0</p>
-                </div>
+                    Generate Your First Script
+                </button>
             </div>
-        </div>
-    </div>
-
-    <!-- Scripts Table -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div class="p-6 border-b border-gray-100">
-            <div class="flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-gray-900">Recent Scripts</h3>
-                <span class="text-sm text-gray-500">{{ Auth::user()->scripts()->count() }} total</span>
-            </div>
-        </div>
-        <div class="overflow-x-auto">
-            @if(Auth::user()->scripts()->count() > 0)
-                <table class="w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Niche</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach(Auth::user()->scripts()->latest()->take(10)->get() as $script)
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <div class="h-8 w-8 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">{{ $script->title }}</div>
-                                            <div class="text-sm text-gray-500">{{ Str::limit($script->content, 50) }}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                        {{ ucfirst($script->niche) }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        {{ $script->status === 'generated' ? 'bg-green-100 text-green-800' : ($script->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
-                                        {{ ucfirst($script->status) }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $script->created_at->diffForHumans() }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button onclick="viewScript('{{ $script->id }}')" class="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
-                                    <button onclick="copyScript('{{ $script->content }}')" class="text-gray-600 hover:text-gray-900 mr-3">Copy</button>
-                                    <button onclick="deleteScript('{{ $script->id }}')" class="text-red-600 hover:text-red-900">Delete</button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @else
-                <div class="text-center py-12">
-                    <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                    </svg>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">No scripts yet</h3>
-                    <p class="text-gray-500 mb-4">Scripts generated by n8n will appear here</p>
-                    <div class="text-sm text-gray-400">
-                        <p>Connect your n8n instance to start generating scripts</p>
-                    </div>
-                </div>
-            @endif
-        </div>
+        @endif
     </div>
 
     <!-- Script View Modal -->
@@ -192,7 +154,7 @@
         </div>
     </div>
 
-    <!-- Script Generation Modal -->
+    <!-- Generate Script Modal (same as dashboard) -->
     <div id="generateModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-lg max-w-md w-full">
@@ -246,6 +208,54 @@
     <script>
         let currentScriptContent = '';
         
+        // Search and filter functionality
+        document.getElementById('searchInput').addEventListener('input', filterScripts);
+        document.getElementById('nicheFilter').addEventListener('change', filterScripts);
+        document.getElementById('statusFilter').addEventListener('change', filterScripts);
+        
+        function filterScripts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const nicheFilter = document.getElementById('nicheFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const cards = document.querySelectorAll('.script-card');
+            
+            cards.forEach(card => {
+                const title = card.dataset.title;
+                const niche = card.dataset.niche;
+                const status = card.dataset.status;
+                
+                const matchesSearch = title.includes(searchTerm);
+                const matchesNiche = !nicheFilter || niche === nicheFilter;
+                const matchesStatus = !statusFilter || status === statusFilter;
+                
+                if (matchesSearch && matchesNiche && matchesStatus) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        function toggleDropdown(scriptId) {
+            const dropdown = document.getElementById(`dropdown-${scriptId}`);
+            // Close all other dropdowns
+            document.querySelectorAll('[id^="dropdown-"]').forEach(d => {
+                if (d.id !== `dropdown-${scriptId}`) {
+                    d.classList.add('hidden');
+                }
+            });
+            dropdown.classList.toggle('hidden');
+        }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('[onclick^="toggleDropdown"]')) {
+                document.querySelectorAll('[id^="dropdown-"]').forEach(d => {
+                    d.classList.add('hidden');
+                });
+            }
+        });
+        
         function viewScript(scriptId) {
             fetch(`/api/scripts/${scriptId}`, {
                 headers: {
@@ -275,27 +285,24 @@
         
         function copyScript(content) {
             navigator.clipboard.writeText(content).then(() => {
-                // Show success message
-                const button = event.target;
-                const originalText = button.textContent;
-                button.textContent = 'Copied!';
-                button.classList.add('text-green-600');
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.classList.remove('text-green-600');
-                }, 2000);
+                showNotification('Script copied to clipboard!', 'success');
             });
         }
         
         function copyModalContent() {
             navigator.clipboard.writeText(currentScriptContent).then(() => {
-                const button = event.target;
-                const originalText = button.textContent;
-                button.textContent = 'Copied!';
-                setTimeout(() => {
-                    button.textContent = originalText;
-                }, 2000);
+                showNotification('Script copied to clipboard!', 'success');
             });
+        }
+        
+        function downloadScript(title, content) {
+            const element = document.createElement('a');
+            const file = new Blob([content], {type: 'text/plain'});
+            element.href = URL.createObjectURL(file);
+            element.download = `${title}.txt`;
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
         }
         
         function deleteScript(scriptId) {
@@ -322,6 +329,7 @@
             document.getElementById('scriptModal').classList.add('hidden');
         }
         
+        // Generate script functions (same as dashboard)
         function generateScript() {
             document.getElementById('generateModal').classList.remove('hidden');
         }
@@ -343,7 +351,6 @@
                 }
             };
             
-            // Show loading state
             const btnText = document.getElementById('generateBtnText');
             const spinner = document.getElementById('generateSpinner');
             btnText.textContent = 'Generating...';
@@ -362,7 +369,6 @@
                 if (result.success) {
                     closeGenerateModal();
                     showNotification('Script generation triggered! Check back in a few minutes.', 'success');
-                    // Optionally refresh the page after a delay
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -375,7 +381,6 @@
                 showNotification('Error triggering generation', 'error');
             })
             .finally(() => {
-                // Reset button state
                 btnText.textContent = 'Generate Script';
                 spinner.classList.add('hidden');
             });
@@ -394,7 +399,7 @@
             }, 5000);
         }
         
-        // Close modal on escape key
+        // Close modals on escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal();
@@ -402,4 +407,13 @@
             }
         });
     </script>
+
+    <style>
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
 </x-app-layout>

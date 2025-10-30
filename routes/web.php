@@ -19,6 +19,14 @@ Route::middleware('auth')->group(function () {
     // Settings routes
     Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings');
     Route::post('/settings/preferences', [App\Http\Controllers\SettingsController::class, 'updatePreferences'])->name('settings.preferences');
+    
+    // Script generation trigger
+    Route::post('/generate-script', [App\Http\Controllers\Api\ScriptController::class, 'triggerGeneration'])->name('generate.script');
+    
+    // Scripts page
+    Route::get('/scripts', function () {
+        return view('scripts');
+    })->name('scripts');
 });
 
 require __DIR__.'/auth.php';
