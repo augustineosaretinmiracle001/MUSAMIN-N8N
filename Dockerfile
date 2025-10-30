@@ -44,7 +44,7 @@ RUN npm run build
 
 # Create .env file from environment variables
 RUN echo "APP_ENV=production" > .env && \
-    echo "APP_DEBUG=true" >> .env && \
+    echo "APP_DEBUG=false" >> .env && \
     echo "APP_KEY=base64:ioxbXKw7LniLXzvrK7aTPulZ4XtlLx2mbcmyGo50CjA=" >> .env && \
     echo "APP_URL=https://musamin.app" >> .env && \
     echo "DB_CONNECTION=mysql" >> .env && \
@@ -56,7 +56,6 @@ RUN echo "APP_ENV=production" > .env && \
 
 # Run Laravel setup commands
 RUN php artisan config:clear || true
-RUN php artisan migrate --force || true
 
 # Clean up Node dependencies
 RUN npm prune --production && npm cache clean --force
