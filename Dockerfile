@@ -30,23 +30,22 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy composer files first for better caching
-COPY composer.json composer.lock ./
+# Copy application code first
+COPY . .
 
 # Install PHP dependencies
-RUN composer install --optimize-autoloader --no-interaction --verbose
-
-# Copy package files
-COPY package.json package-lock.json ./
+RUN composer install --no-scripts --no-interaction
 
 # Install Node dependencies
 RUN npm ci
 
-# Copy application code
-COPY . .
-
 # Build frontend assets
 RUN npm run build
+
+# Run Laravel setup commands
+RUN php artisan config:cache || true
+RUN php artisan route:cache || true
+RUN php artisan view:cache || true
 
 # Clean up Node dependencies
 RUN npm prune --production && npm cache clean --force
