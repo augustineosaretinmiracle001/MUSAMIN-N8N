@@ -42,10 +42,20 @@ RUN npm ci
 # Build frontend assets
 RUN npm run build
 
+# Create .env file from environment variables
+RUN echo "APP_ENV=production" > .env && \
+    echo "APP_DEBUG=true" >> .env && \
+    echo "APP_KEY=base64:ioxbXKw7LniLXzvrK7aTPulZ4XtlLx2mbcmyGo50CjA=" >> .env && \
+    echo "APP_URL=https://musamin.app" >> .env && \
+    echo "DB_CONNECTION=mysql" >> .env && \
+    echo "DB_HOST=mysql" >> .env && \
+    echo "DB_PORT=3306" >> .env && \
+    echo "DB_DATABASE=default" >> .env && \
+    echo "DB_USERNAME=mysql" >> .env && \
+    echo "DB_PASSWORD=Musamin@70" >> .env
+
 # Run Laravel setup commands
-RUN php artisan config:cache || true
-RUN php artisan route:cache || true
-RUN php artisan view:cache || true
+RUN php artisan config:clear || true
 RUN php artisan migrate --force || true
 
 # Clean up Node dependencies
