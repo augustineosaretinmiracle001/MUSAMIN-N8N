@@ -34,51 +34,37 @@ WORKDIR /var/www
 COPY composer.json composer.lock ./
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install Node dependencies (including dev for build)
+# Install Node dependencies
 RUN npm ci
 
 # Copy application code
 COPY . .
 
-# Setup Laravel environment
-RUN cp .env.example .env \
-    && php artisan key:generate --ansi \
-    && php artisan package:discover --ansi \
-    && php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
-
 # Build frontend assets
 RUN npm run build
 
-# Clean up Node dependencies and cache
+# Clean up Node dependencies
 RUN npm prune --production && npm cache clean --force
 
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
-    && chmod -R 755 /var/www/bootstrap/cache \
-    && chmod 644 /var/www/.env
+    && chmod -R 755 /var/www/bootstrap/cache
 
 # Copy configuration files
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY docker/php.ini /usr/local/etc/php/conf.d/app.ini
 
 # Create necessary directories
 RUN mkdir -p /var/log/supervisor /var/log/nginx
 
 # Expose port
 EXPOSE 80
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
 
 # Start supervisor
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
