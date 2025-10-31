@@ -33,9 +33,10 @@ Route::middleware('auth:web')->group(function () {
     Route::post('/generate-token', [App\Http\Controllers\SettingsController::class, 'generateToken']);
 });
 
-// n8n integration endpoints (UUID-based)
-Route::get('/users/{user_uuid}/preferences', [App\Http\Controllers\Api\UserController::class, 'getPreferences'])->where('user_uuid', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
-Route::post('/users/{user_uuid}/scripts', [App\Http\Controllers\Api\ScriptController::class, 'saveScript'])->where('user_uuid', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
+// n8n integration endpoints (UUID-based) - Public for n8n access
+Route::get('/users/{user_uuid}/preferences', [App\Http\Controllers\Api\UserController::class, 'getPreferences']);
+Route::post('/users/{user_uuid}/scripts', [App\Http\Controllers\Api\ScriptController::class, 'saveScript']);
+Route::post('/scripts', [App\Http\Controllers\Api\ScriptController::class, 'store']); // For n8n to save scripts
 Route::post('/trigger-generation', [App\Http\Controllers\Api\ScriptController::class, 'triggerGeneration']);
 
 // n8n webhook endpoints (for n8n to send data back)
