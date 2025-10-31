@@ -36,7 +36,6 @@ Route::middleware('auth:web')->group(function () {
 // n8n integration endpoints (UUID-based) - Public for n8n access
 Route::get('/users/{user_uuid}/preferences', [App\Http\Controllers\Api\UserController::class, 'getPreferences']);
 Route::post('/users/{user_uuid}/scripts', [App\Http\Controllers\Api\ScriptController::class, 'saveScript']);
-Route::post('/scripts', [App\Http\Controllers\Api\ScriptController::class, 'store']); // For n8n to save scripts
 Route::post('/trigger-generation', [App\Http\Controllers\Api\ScriptController::class, 'triggerGeneration']);
 
 // n8n webhook endpoints (for n8n to send data back)
