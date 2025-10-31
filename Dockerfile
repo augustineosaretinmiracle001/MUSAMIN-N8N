@@ -77,15 +77,5 @@ RUN mkdir -p /var/log/supervisor /var/log/nginx
 # Expose port
 EXPOSE 80
 
-# Create startup script
-RUN echo '#!/bin/sh' > /startup.sh && \
-    echo 'echo "Waiting for database..."' >> /startup.sh && \
-    echo 'sleep 10' >> /startup.sh && \
-    echo 'php artisan migrate --force' >> /startup.sh && \
-    echo 'php artisan config:cache' >> /startup.sh && \
-    echo 'php artisan view:cache' >> /startup.sh && \
-    echo 'exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf' >> /startup.sh && \
-    chmod +x /startup.sh
-
-# Start with migration
-CMD ["/startup.sh"]
+# Start supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
