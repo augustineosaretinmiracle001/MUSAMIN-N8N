@@ -8,5 +8,7 @@ export default defineConfig({
             refresh: true,
         }),
     ],
-    base: 'https://musamin.app/',
+    server: {
+        https: true
+    }
 });
