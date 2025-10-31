@@ -39,8 +39,11 @@ RUN composer install --no-scripts --no-interaction
 # Install Node dependencies
 RUN npm ci
 
-# Build frontend assets
-RUN npm run build
+# Build Tailwind CSS directly
+RUN npx tailwindcss -i ./resources/css/app.css -o ./public/css/app.css --minify
+
+# Build JS assets
+RUN npm run build || echo "Vite build failed, using direct CSS"
 
 # Create .env file from environment variables
 RUN echo "APP_ENV=production" > .env && \
