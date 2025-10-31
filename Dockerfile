@@ -37,7 +37,7 @@ COPY . .
 RUN composer install --no-scripts --no-interaction
 
 # Install Node dependencies
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # Build frontend assets with Vite
 RUN npm run build
