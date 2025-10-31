@@ -11,21 +11,21 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Assets -->
-        @vite(['resources/css/dashboard.css', 'resources/js/dashboard.js'])
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body>
-        <div class="dashboard-layout">
+    <body class="font-sans antialiased bg-gray-50">
+        <div class="flex h-screen">
             <!-- Mobile Overlay -->
-            <div id="mobile-overlay" class="modal-overlay" style="display: none;"></div>
+            <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden"></div>
             
             <!-- Sidebar -->
-            <div id="sidebar" class="sidebar">
+            <div id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-16 bg-white shadow-lg flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
                 @include('layouts.sidebar')
             </div>
 
             <!-- Main Content -->
-            <div class="main-content">
+            <div class="flex-1 overflow-y-auto p-4 lg:p-8">
                 {{ $slot }}
             </div>
         </div>
