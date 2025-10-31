@@ -52,6 +52,8 @@ class ScriptController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'niche' => 'nullable|string',
+            'status' => 'nullable|string',
+            'user_uuid' => 'nullable|string', // Allow but ignore
             'metadata' => 'nullable|array'
         ]);
 
@@ -60,7 +62,7 @@ class ScriptController extends Controller
             'title' => $validated['title'],
             'content' => $validated['content'],
             'niche' => $validated['niche'] ?? 'general',
-            'status' => 'generated',
+            'status' => $validated['status'] ?? 'generated',
             'metadata' => $validated['metadata'] ?? []
         ]);
 
