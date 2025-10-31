@@ -42,6 +42,9 @@ RUN npm ci
 # Build frontend assets
 RUN npm run build
 
+# Verify build output
+RUN ls -la public/build/ || echo "Build directory not found"
+
 # Create .env file from environment variables
 RUN echo "APP_ENV=production" > .env && \
     echo "APP_DEBUG=false" >> .env && \
@@ -56,6 +59,8 @@ RUN echo "APP_ENV=production" > .env && \
 
 # Run Laravel setup commands
 RUN php artisan config:clear || true
+RUN php artisan route:cache || true
+RUN php artisan view:cache || true
 
 # Clean up Node dependencies
 RUN npm prune --production && npm cache clean --force
