@@ -39,17 +39,16 @@ RUN composer install --no-scripts --no-interaction
 # Install Node dependencies
 RUN npm ci
 
-# Build Tailwind CSS directly
-RUN npx tailwindcss -i ./resources/css/app.css -o ./public/css/app.css --minify
-
-# Build JS assets
-RUN npm run build || echo "Vite build failed, using direct CSS"
+# Build frontend assets
+RUN npm run build
 
 # Create .env file from environment variables
 RUN echo "APP_ENV=production" > .env && \
     echo "APP_DEBUG=false" >> .env && \
     echo "APP_KEY=base64:ioxbXKw7LniLXzvrK7aTPulZ4XtlLx2mbcmyGo50CjA=" >> .env && \
     echo "APP_URL=https://musamin.app" >> .env && \
+    echo "ASSET_URL=https://musamin.app" >> .env && \
+    echo "FORCE_HTTPS=true" >> .env && \
     echo "DB_CONNECTION=mysql" >> .env && \
     echo "DB_HOST=mysql" >> .env && \
     echo "DB_PORT=3306" >> .env && \
