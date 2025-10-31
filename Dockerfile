@@ -47,9 +47,6 @@ RUN echo "APP_ENV=production" > .env && \
     echo "APP_DEBUG=false" >> .env && \
     echo "APP_KEY=base64:ioxbXKw7LniLXzvrK7aTPulZ4XtlLx2mbcmyGo50CjA=" >> .env && \
     echo "APP_URL=https://musamin.app" >> .env && \
-    echo "ASSET_URL=https://musamin.app" >> .env && \
-    echo "FORCE_HTTPS=true" >> .env && \
-    echo "TRUSTED_PROXIES=*" >> .env && \
     echo "DB_CONNECTION=mysql" >> .env && \
     echo "DB_HOST=mysql" >> .env && \
     echo "DB_PORT=3306" >> .env && \
