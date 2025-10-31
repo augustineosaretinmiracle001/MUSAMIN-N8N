@@ -59,8 +59,6 @@ RUN echo "APP_ENV=production" > .env && \
 
 # Run Laravel setup commands
 RUN php artisan config:clear || true
-RUN php artisan route:cache || true
-RUN php artisan view:cache || true
 
 # Clean up Node dependencies
 RUN npm prune --production && npm cache clean --force
@@ -79,6 +77,10 @@ RUN mkdir -p /var/log/supervisor /var/log/nginx
 
 # Expose port
 EXPOSE 80
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost/ || exit 1
 
 # Start supervisor
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
