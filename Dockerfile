@@ -56,6 +56,8 @@ RUN echo "APP_ENV=production" > .env && \
 
 # Run Laravel setup commands
 RUN php artisan config:clear || true
+RUN php artisan view:clear || true
+RUN php artisan route:clear || true
 
 # Clean up Node dependencies
 RUN npm prune --production && npm cache clean --force
@@ -80,6 +82,8 @@ RUN echo '#!/bin/sh' > /startup.sh && \
     echo 'echo "Waiting for database..."' >> /startup.sh && \
     echo 'sleep 10' >> /startup.sh && \
     echo 'php artisan migrate --force' >> /startup.sh && \
+    echo 'php artisan config:cache' >> /startup.sh && \
+    echo 'php artisan view:cache' >> /startup.sh && \
     echo 'exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf' >> /startup.sh && \
     chmod +x /startup.sh
 
