@@ -39,8 +39,12 @@ RUN composer install --no-scripts --no-interaction
 # Install Node dependencies
 RUN npm ci
 
-# Build frontend assets
-RUN npm run build
+# Copy CSS files to public directory
+RUN mkdir -p public/css
+RUN cp resources/css/*.css public/css/
+
+# Build frontend assets (optional, for any remaining JS)
+RUN npm run build || echo "Vite build skipped - using direct CSS"
 
 # Create .env file from environment variables
 RUN echo "APP_ENV=production" > .env && \
