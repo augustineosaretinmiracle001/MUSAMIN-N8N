@@ -39,15 +39,8 @@ RUN composer install --no-scripts --no-interaction
 # Install Node dependencies
 RUN npm ci
 
-# Build frontend assets with debug
+# Build frontend assets
 RUN npm run build
-
-# Create build directory if it doesn't exist
-RUN mkdir -p public/build
-
-# Verify build output
-RUN ls -la public/ && ls -la public/build/ || echo "Build directory contents:"
-RUN find public/ -name "*.css" -o -name "*.js" || echo "No CSS/JS files found"
 
 # Create .env file from environment variables
 RUN echo "APP_ENV=production" > .env && \
