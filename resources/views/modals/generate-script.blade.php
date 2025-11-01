@@ -1,5 +1,5 @@
 <!-- Generate Script Modal -->
-<div x-data="generateScriptModal()" x-show="open" x-cloak class="fixed inset-0 bg-black bg-opacity-50 z-50" @keydown.escape="closeModal()">
+<div x-data="generateScriptModal()" x-show="open" x-cloak class="fixed inset-0 bg-black bg-opacity-50 z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-white rounded-lg max-w-md lg:max-w-2xl w-full" x-transition>
             <div class="flex items-center justify-between p-6 border-b">
@@ -66,10 +66,12 @@
             
             openModal() {
                 this.open = true;
+                document.body.style.overflow = 'hidden';
             },
             
             closeModal() {
                 this.open = false;
+                document.body.style.overflow = 'auto';
                 this.resetForm();
             },
             

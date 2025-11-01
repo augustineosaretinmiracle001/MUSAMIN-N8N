@@ -1,5 +1,5 @@
 <!-- View Script Modal -->
-<div x-data="viewScriptModal()" x-show="open" x-cloak class="fixed inset-0 bg-black bg-opacity-50 z-50" @keydown.escape="closeModal()">
+<div x-data="viewScriptModal()" x-show="open" x-cloak class="fixed inset-0 bg-black bg-opacity-50 z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden" x-transition>
             <div class="flex items-center justify-between p-6 border-b">
@@ -13,13 +13,10 @@
             <div class="p-6 overflow-y-auto max-h-[70vh]">
                 <div x-html="scriptContent" class="prose max-w-none"></div>
             </div>
-            <div class="flex items-center justify-end space-x-3 p-6 border-t bg-gray-50">
+            <div class="flex items-center justify-end p-6 border-t bg-gray-50">
                 <button @click="copyContent()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                     <span x-show="!copied">Copy Content</span>
                     <span x-show="copied">Copied!</span>
-                </button>
-                <button @click="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                    Close
                 </button>
             </div>
         </div>
@@ -38,10 +35,12 @@
             openModal(scriptId) {
                 this.fetchScript(scriptId);
                 this.open = true;
+                document.body.style.overflow = 'hidden';
             },
             
             closeModal() {
                 this.open = false;
+                document.body.style.overflow = 'auto';
                 this.resetModal();
             },
             

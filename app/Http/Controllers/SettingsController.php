@@ -33,16 +33,32 @@ class SettingsController extends Controller
         return redirect()->route('settings')->with('success', 'Preferences updated successfully!');
     }
 
-    public function generateToken()
+    public function generateToken(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255'
+        ]);
+        
+        $user = Auth::user();
+        
+        // Create new token with custom name
+        $token = $user->createToken($validated['name'])->plainTextToken;
+        
+        return response()->json(['token' => $token]);
+    }
+    
+    public function deleteToken($tokenId)
     {
         $user = Auth::user();
         
-        // Revoke existing tokens
-        $user->tokens()->delete();
+        $token = $user->tokens()->where('id', $tokenId)->first();
         
-        // Create new token
-        $token = $user->createToken('api-token')->plainTextToken;
+        if (!$token) {
+            return response()->json(['error' => 'Token not found'], 404);
+        }
         
-        return response()->json(['token' => $token]);
+        $token->delete();
+        
+        return response()->json(['message' => 'Token deleted successfully']);
     }
 }

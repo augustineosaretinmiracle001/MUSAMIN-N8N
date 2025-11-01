@@ -22,9 +22,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/scripts/{script}', [App\Http\Controllers\Api\ScriptController::class, 'show']);
 });
 
-// Token generation (web auth)
-Route::middleware('web', 'auth')->group(function () {
+// Token management (web auth)
+Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/generate-token', [App\Http\Controllers\SettingsController::class, 'generateToken']);
+    Route::delete('/tokens/{token}', [App\Http\Controllers\SettingsController::class, 'deleteToken']);
 });
 
 // n8n integration endpoints (secured with API key)
