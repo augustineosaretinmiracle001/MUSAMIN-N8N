@@ -82,6 +82,43 @@ class ScriptController extends Controller
     }
 
     /**
+     * Save script from n8n (public endpoint)
+     * n8n calls this with user_uuid in body
+     */
+    public function saveScriptFromN8n(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'user_uuid' => 'required|string',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'niche' => 'nullable|string',
+            'status' => 'nullable|string',
+            'metadata' => 'nullable|array'
+        ]);
+
+        $user = User::find($validated['user_uuid']);
+        
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $script = Script::create([
+            'user_id' => $user->id,
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'niche' => $validated['niche'] ?? 'general',
+            'status' => $validated['status'] ?? 'generated',
+            'metadata' => $validated['metadata'] ?? []
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'script_id' => $script->id,
+            'message' => 'Script saved successfully'
+        ], 201);
+    }
+
+    /**
      * Trigger script generation in n8n
      * Your web app calls this
      */
