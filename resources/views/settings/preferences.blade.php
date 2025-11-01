@@ -22,43 +22,38 @@
             @csrf
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Content Niche</label>
-                <input type="text" name="content_niche" value="{{ auth()->user()->preferences->content_niche ?? '' }}" 
+                <label class="block text-sm font-medium text-gray-700 mb-2">Niche</label>
+                <input type="text" name="niche" value="{{ auth()->user()->preferences->getNiche() ?? '' }}" 
                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                        placeholder="e.g., Storytelling, Education, Technology, Business">
                 <p class="text-sm text-gray-500 mt-1">What type of content do you primarily create?</p>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Writing Tone</label>
-                <input type="text" name="writing_tone" value="{{ auth()->user()->preferences->writing_tone ?? '' }}" 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                       placeholder="e.g., Professional, Casual, Humorous, Friendly">
-                <p class="text-sm text-gray-500 mt-1">What tone should your scripts have?</p>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Writing Style</label>
-                <input type="text" name="writing_style" value="{{ auth()->user()->preferences->writing_style ?? '' }}" 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                       placeholder="e.g., Conversational, Direct, Storytelling, Educational">
-                <p class="text-sm text-gray-500 mt-1">How should your content be structured and presented?</p>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Target Audience</label>
-                <input type="text" name="target_audience" value="{{ auth()->user()->preferences->target_audience ?? '' }}" 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                       placeholder="e.g., Young professionals, Students, Entrepreneurs, General audience">
-                <p class="text-sm text-gray-500 mt-1">Who is your primary audience?</p>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Custom Instructions</label>
-                <textarea name="custom_instructions" rows="4" 
+                <label class="block text-sm font-medium text-gray-700 mb-2">Instructions</label>
+                <textarea name="instructions" rows="6" 
                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                          placeholder="Any specific instructions for script generation...">{{ auth()->user()->preferences->custom_instructions ?? '' }}</textarea>
-                <p class="text-sm text-gray-500 mt-1">Additional guidelines for AI to follow when generating your scripts</p>
+                          placeholder="e.g., Target young professionals, use casual tone, conversational style, be relatable, ask engaging questions, keep it under 2 minutes...">{{ auth()->user()->preferences->getInstructions() ?? '' }}</textarea>
+                <p class="text-sm text-gray-500 mt-1">All your preferences: target audience, tone, style, length, format, etc.</p>
+            </div>
+
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <label class="block text-sm font-medium text-gray-700">Auto Generate Title</label>
+                    <input type="checkbox" name="auto_generate_title" value="1" 
+                           {{ (auth()->user()->preferences->getAutoGenerateTitle() ?? true) ? 'checked' : '' }}
+                           class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                           onchange="toggleTitleField(this)">
+                </div>
+                <p class="text-sm text-gray-500 mb-3">Let AI create unique titles for each script</p>
+                
+                <div id="titleField" class="{{ (auth()->user()->preferences->getAutoGenerateTitle() ?? true) ? 'hidden' : '' }}">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Default Title</label>
+                    <input type="text" name="title" value="{{ auth()->user()->preferences->getTitle() ?? '' }}" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="e.g., Daily Stories with John">
+                    <p class="text-sm text-gray-500 mt-1">This title will be used when auto generation is off</p>
+                </div>
             </div>
 
             <div class="flex justify-end">
@@ -68,4 +63,15 @@
             </div>
         </form>
     </div>
+
+    <script>
+        function toggleTitleField(checkbox) {
+            const titleField = document.getElementById('titleField');
+            if (checkbox.checked) {
+                titleField.classList.add('hidden');
+            } else {
+                titleField.classList.remove('hidden');
+            }
+        }
+    </script>
 </x-app-layout>

@@ -13,23 +13,7 @@
             <div class="p-6">
                 <form @submit.prevent="triggerGeneration()" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Platform</label>
-                        <select x-model="form.platform" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            <option value="">Select Platform</option>
-                            <option value="youtube">YouTube</option>
-                            <option value="tiktok">TikTok</option>
-                            <option value="instagram">Instagram</option>
-                            <option value="facebook">Facebook</option>
-                            <option value="twitter">Twitter</option>
-                            <option value="linkedin">LinkedIn</option>
-                            <option value="blog">Blog/Website</option>
-                            <option value="podcast">Podcast</option>
-                            <option value="email">Email</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Content Niche</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Niche</label>
                         <select x-model="form.niche" @change="handleNicheChange()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                             <option value="">Select Niche</option>
                             <option value="storytelling">Storytelling</option>
@@ -53,6 +37,11 @@
                         </select>
                         <input x-show="form.niche === 'custom'" x-model="form.customNiche" type="text" placeholder="Enter your specific niche" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 mt-2" x-transition>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Topic (Optional)</label>
+                        <input x-model="form.topic" type="text" placeholder="Enter a specific topic..." 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Topic (Optional)</label>
@@ -88,7 +77,6 @@
             open: false,
             loading: false,
             form: {
-                platform: '',
                 niche: '',
                 customNiche: '',
                 topic: '',
@@ -108,7 +96,6 @@
             
             resetForm() {
                 this.form = {
-                    platform: '',
                     niche: '',
                     customNiche: '',
                     topic: '',
@@ -134,7 +121,6 @@
                         },
                         body: JSON.stringify({
                             user_uuid: '{{ auth()->user()->id }}',
-                            platform: this.form.platform,
                             niche: this.form.niche === 'custom' ? this.form.customNiche : this.form.niche,
                             topic: this.form.topic,
                             instructions: this.form.instructions,

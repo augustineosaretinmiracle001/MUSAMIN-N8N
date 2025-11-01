@@ -24,13 +24,18 @@ class ScriptController extends Controller
             'metadata' => 'nullable|array'
         ]);
 
+        $metadata = $validated['metadata'] ?? [];
+        $metadata['generation_type'] = 'manual';
+        $metadata['status'] = 'done';
+        $metadata['word_count'] = str_word_count($validated['content']);
+        $metadata['estimated_duration'] = ceil($metadata['word_count'] / 150) . ' minutes';
+        
         $script = Script::create([
             'user_id' => $request->user()->id,
             'title' => $validated['title'],
             'content' => $validated['content'],
-            'niche' => $validated['niche'] ?? 'general',
-            'status' => 'generated',
-            'metadata' => $validated['metadata'] ?? []
+            'niche' => $validated['niche'],
+            'metadata' => $metadata
         ]);
 
         return response()->json($script, 201);
@@ -52,18 +57,22 @@ class ScriptController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'niche' => 'nullable|string',
-            'status' => 'nullable|string',
             'user_uuid' => 'nullable|string', // Allow but ignore
             'metadata' => 'nullable|array'
         ]);
 
+        $metadata = $validated['metadata'] ?? [];
+        $metadata['generation_type'] = $metadata['generation_type'] ?? 'auto_generated';
+        $metadata['status'] = 'done';
+        $metadata['word_count'] = str_word_count($validated['content']);
+        $metadata['estimated_duration'] = ceil($metadata['word_count'] / 150) . ' minutes';
+        
         $script = Script::create([
             'user_id' => $user->id,
             'title' => $validated['title'],
             'content' => $validated['content'],
-            'niche' => $validated['niche'] ?? 'general',
-            'status' => $validated['status'] ?? 'generated',
-            'metadata' => $validated['metadata'] ?? []
+            'niche' => $validated['niche'],
+            'metadata' => $metadata
         ]);
 
         return response()->json([
@@ -84,7 +93,6 @@ class ScriptController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'niche' => 'nullable|string',
-            'status' => 'nullable|string',
             'metadata' => 'nullable|array'
         ]);
 
@@ -94,13 +102,18 @@ class ScriptController extends Controller
             return response()->json(['error' => 'User not found'], 404);
         }
 
+        $metadata = $validated['metadata'] ?? [];
+        $metadata['generation_type'] = $metadata['generation_type'] ?? 'auto_generated';
+        $metadata['status'] = 'done';
+        $metadata['word_count'] = str_word_count($validated['content']);
+        $metadata['estimated_duration'] = ceil($metadata['word_count'] / 150) . ' minutes';
+
         $script = Script::create([
             'user_id' => $user->id,
             'title' => $validated['title'],
             'content' => $validated['content'],
-            'niche' => $validated['niche'] ?? 'general',
-            'status' => $validated['status'] ?? 'generated',
-            'metadata' => $validated['metadata'] ?? []
+            'niche' => $validated['niche'],
+            'metadata' => $metadata
         ]);
 
         return response()->json([

@@ -33,11 +33,10 @@ class TriggerScheduledGeneration implements ShouldQueue
                 'schedule_id' => $this->schedule->id,
                 'schedule_name' => $this->schedule->name,
                 'preferences' => [
-                    'content_niche' => $preferences?->content_niche ?? '',
-                    'writing_tone' => $preferences?->writing_tone ?? '',
-                    'writing_style' => $preferences?->writing_style ?? '',
-                    'target_audience' => $preferences?->target_audience ?? '',
-                    'custom_instructions' => $preferences?->custom_instructions ?? 'Be relatable to humans'
+                    'niche' => $preferences?->getNiche() ?? '',
+                    'instructions' => $preferences?->getInstructions() ?? 'Be relatable to humans',
+                    'auto_generate_title' => $preferences?->getAutoGenerateTitle() ?? true,
+                    'title' => $preferences?->getTitle() ?? ''
                 ]
             ];
 

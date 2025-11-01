@@ -13,11 +13,31 @@ class Script extends Model
     protected $fillable = [
         'user_id',
         'title',
+        'niche',
         'content',
-        'content_niche',
-        'script_status',
         'metadata'
     ];
+
+    // Helper methods for metadata access
+    public function getGenerationType()
+    {
+        return $this->metadata['generation_type'] ?? 'manual';
+    }
+
+    public function getStatus()
+    {
+        return $this->metadata['status'] ?? 'pending';
+    }
+
+    public function getWordCount()
+    {
+        return $this->metadata['word_count'] ?? null;
+    }
+
+    public function getEstimatedDuration()
+    {
+        return $this->metadata['estimated_duration'] ?? null;
+    }
 
     protected $casts = [
         'metadata' => 'array'

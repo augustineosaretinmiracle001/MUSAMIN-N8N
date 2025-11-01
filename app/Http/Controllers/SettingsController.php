@@ -36,18 +36,17 @@ class SettingsController extends Controller
     public function updatePreferences(Request $request)
     {
         $validated = $request->validate([
-            'content_niche' => 'nullable|string|max:255',
-            'writing_tone' => 'nullable|string|max:255',
-            'writing_style' => 'nullable|string|max:255',
-            'target_audience' => 'nullable|string|max:255',
-            'custom_instructions' => 'nullable|string'
+            'niche' => 'nullable|string|max:255',
+            'instructions' => 'nullable|string',
+            'auto_generate_title' => 'boolean',
+            'title' => 'nullable|string|max:255'
         ]);
 
         $user = Auth::user();
         
         UserPreference::updateOrCreate(
             ['user_id' => $user->id],
-            $validated
+            ['metadata' => $validated]
         );
 
         return redirect()->route('settings.preferences')->with('success', 'Preferences updated successfully!');

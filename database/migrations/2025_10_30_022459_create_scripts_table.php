@@ -12,9 +12,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->string('title');
+            $table->string('niche')->nullable();
             $table->longText('content');
-            $table->string('content_niche')->nullable();
-            $table->string('script_status')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
         });
