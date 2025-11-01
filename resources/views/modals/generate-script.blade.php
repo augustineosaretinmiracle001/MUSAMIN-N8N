@@ -1,50 +1,143 @@
 <!-- Generate Script Modal -->
-<div id="generateScriptModal" class="modal-overlay" style="display: none;">
-    <div class="modal">
-        <div class="modal-header">
-            <h3 class="modal-title">Generate New Script</h3>
-        </div>
-        
-        <form id="generateScriptForm" method="POST" action="{{ route('scripts.generate') }}">
-            @csrf
-            
-            <div class="form-group">
-                <label class="form-label" for="script_type">Script Type</label>
-                <select class="form-select" id="script_type" name="script_type" required>
-                    <option value="">Select script type...</option>
-                    <option value="automation">Automation Script</option>
-                    <option value="data-processing">Data Processing</option>
-                    <option value="web-scraping">Web Scraping</option>
-                    <option value="api-integration">API Integration</option>
-                    <option value="custom">Custom Script</option>
-                </select>
+<div x-data="generateScriptModal()" x-show="open" x-cloak class="fixed inset-0 bg-black bg-opacity-50 z-50" @keydown.escape="closeModal()">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div @click.away="closeModal()" class="bg-white rounded-lg max-w-md w-full" x-transition>
+            <div class="flex items-center justify-between p-6 border-b">
+                <h3 class="text-lg font-semibold text-gray-900">Generate New Script</h3>
+                <button @click="closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
-
-            <div class="form-group">
-                <label class="form-label" for="description">Description</label>
-                <textarea class="form-textarea" id="description" name="description" rows="4" 
-                    placeholder="Describe what you want the script to do..."></textarea>
+            <div class="p-6">
+                <form @submit.prevent="triggerGeneration()" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Script Type</label>
+                        <select x-model="form.type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <option value="youtube_script">YouTube Script</option>
+                            <option value="blog_post">Blog Post</option>
+                            <option value="social_media">Social Media Content</option>
+                            <option value="email_newsletter">Email Newsletter</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Topic (Optional)</label>
+                        <input x-model="form.topic" type="text" placeholder="Enter a specific topic..." 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Additional Instructions</label>
+                        <textarea x-model="form.instructions" rows="3" placeholder="Any specific requirements..." 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"></textarea>
+                    </div>
+                </form>
             </div>
-
-            <div class="form-group">
-                <label class="form-label" for="language">Programming Language</label>
-                <select class="form-select" id="language" name="language">
-                    <option value="python">Python</option>
-                    <option value="javascript">JavaScript</option>
-                    <option value="php">PHP</option>
-                    <option value="bash">Bash</option>
-                    <option value="powershell">PowerShell</option>
-                </select>
+            <div class="flex items-center justify-end space-x-3 p-6 border-t bg-gray-50">
+                <button @click="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                    Cancel
+                </button>
+                <button @click="triggerGeneration()" :disabled="loading" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50">
+                    <span x-show="!loading">Generate Script</span>
+                    <span x-show="loading" class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Generating...
+                    </span>
+                </button>
             </div>
-        </form>
-
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeModal('generateScriptModal')">
-                Cancel
-            </button>
-            <button type="button" class="btn btn-primary" onclick="submitForm('generateScriptForm')">
-                Generate Script
-            </button>
         </div>
     </div>
 </div>
+
+<script>
+    function generateScriptModal() {
+        return {
+            open: false,
+            loading: false,
+            form: {
+                type: 'youtube_script',
+                topic: '',
+                instructions: ''
+            },
+            
+            openModal() {
+                this.open = true;
+            },
+            
+            closeModal() {
+                this.open = false;
+                this.resetForm();
+            },
+            
+            resetForm() {
+                this.form = {
+                    type: 'youtube_script',
+                    topic: '',
+                    instructions: ''
+                };
+                this.loading = false;
+            },
+            
+            async triggerGeneration() {
+                this.loading = true;
+                
+                try {
+                    const response = await fetch('https://n8n.musamin.app/webhook/trigger-generation', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            user_uuid: '{{ auth()->user()->id }}',
+                            type: this.form.type,
+                            topic: this.form.topic,
+                            instructions: this.form.instructions,
+                            triggered_at: new Date().toISOString()
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    console.log('Script generation triggered:', result);
+                    
+                    this.closeModal();
+                    this.showNotification('Script generation started! Check back in a few minutes.', 'success');
+                    
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    this.showNotification('Error connecting to n8n. Please try again.', 'error');
+                } finally {
+                    this.loading = false;
+                }
+            },
+            
+            showNotification(message, type) {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 ${
+                    type === 'success' ? 'bg-green-600' : 'bg-red-600'
+                }`;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 5000);
+            }
+        }
+    }
+    
+    // Global function to open modal from anywhere
+    window.generateScript = function() {
+        // Find the Alpine component and call openModal
+        const modalElement = document.querySelector('[x-data*="generateScriptModal"]');
+        if (modalElement && modalElement._x_dataStack) {
+            modalElement._x_dataStack[0].openModal();
+        }
+    }
+</script>

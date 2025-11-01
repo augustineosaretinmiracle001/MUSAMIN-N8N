@@ -154,7 +154,10 @@
         </div>
     </div>
 
-    <!-- Generate Script Modal (same as dashboard) -->
+    <!-- Include Generate Script Modal -->
+    @include('modals.generate-script')
+    
+    <!-- Old modal removed -->
     <div id="generateModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-lg max-w-md w-full">
@@ -330,64 +333,7 @@
             document.getElementById('scriptModal').classList.add('hidden');
         }
         
-        // Generate script functions (same as dashboard)
-        function generateScript() {
-            document.getElementById('generateModal').classList.remove('hidden');
-        }
-        
-        function closeGenerateModal() {
-            document.getElementById('generateModal').classList.add('hidden');
-            document.getElementById('generateForm').reset();
-        }
-        
-        function triggerGeneration() {
-            const form = document.getElementById('generateForm');
-            const formData = new FormData(form);
-            const data = {
-                user_uuid: '{{ auth()->user()->id }}',
-                type: formData.get('type'),
-                parameters: {
-                    topic: formData.get('topic'),
-                    instructions: formData.get('instructions')
-                }
-            };
-            
-            const btnText = document.getElementById('generateBtnText');
-            const spinner = document.getElementById('generateSpinner');
-            btnText.textContent = 'Generating...';
-            spinner.classList.remove('hidden');
-            
-            fetch('https://n8n.musamin.app/webhook/trigger-generation', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    user_uuid: data.user_uuid,
-                    type: data.type,
-                    topic: data.parameters.topic,
-                    instructions: data.parameters.instructions,
-                    triggered_at: new Date().toISOString()
-                })
-            })
-            .then(response => response.json())
-            .then(result => {
-                console.log('Script generation triggered:', result);
-                closeGenerateModal();
-                showNotification('Script generation started! Check back in a few minutes.', 'success');
-                setTimeout(() => {
-                    location.reload();
-                }, 3000);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('Error connecting to n8n. Please try again.', 'error');
-            })
-            .finally(() => {
-                btnText.textContent = 'Generate Script';
-                spinner.classList.add('hidden');
-            });
-        }
+        // generateScript function is now handled by Alpine.js modal
         
         function showNotification(message, type) {
             const notification = document.createElement('div');
@@ -406,7 +352,6 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal();
-                closeGenerateModal();
             }
         });
     </script>

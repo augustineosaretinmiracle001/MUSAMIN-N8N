@@ -170,66 +170,19 @@
         </div>
     </div>
 
-    <!-- Script Generation Modal -->
-    <div id="generateModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg max-w-md w-full">
-                <div class="flex items-center justify-between p-6 border-b">
-                    <h3 class="text-lg font-semibold text-gray-900">Generate New Script</h3>
-                    <button onclick="closeGenerateModal()" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="p-6">
-                    <form id="generateForm" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Script Type</label>
-                            <select name="type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                <option value="youtube_script">YouTube Script</option>
-                                <option value="blog_post">Blog Post</option>
-                                <option value="social_media">Social Media Content</option>
-                                <option value="email_newsletter">Email Newsletter</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Topic (Optional)</label>
-                            <input type="text" name="topic" placeholder="Enter a specific topic..." 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Additional Instructions</label>
-                            <textarea name="instructions" rows="3" placeholder="Any specific requirements..." 
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="flex items-center justify-end space-x-3 p-6 border-t bg-gray-50">
-                    <button onclick="closeGenerateModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                        Cancel
-                    </button>
-                    <button onclick="triggerGeneration()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                        <span id="generateBtnText">Generate Script</span>
-                        <svg id="generateSpinner" class="hidden animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Include Generate Script Modal -->
+    @include('modals.generate-script')
 
     <script>
         let currentScriptContent = '';
         
         function viewScript(scriptId) {
-            fetch(`/api/scripts/${scriptId}`, {
+            fetch(`/scripts/${scriptId}`, {
                 headers: {
-                    'Authorization': 'Bearer ' + '{{ auth()->user()->createToken("dashboard")->plainTextToken }}',
-                    'Accept': 'application/json'
-                }
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                credentials: 'same-origin'
             })
             .then(response => response.json())
             .then(script => {
@@ -253,7 +206,6 @@
         
         function copyScript(content) {
             navigator.clipboard.writeText(content).then(() => {
-                // Show success message
                 const button = event.target;
                 const originalText = button.textContent;
                 button.textContent = 'Copied!';
@@ -278,13 +230,13 @@
         
         function deleteScript(scriptId) {
             if (confirm('Are you sure you want to delete this script?')) {
-                fetch(`/api/scripts/${scriptId}`, {
+                fetch(`/scripts/${scriptId}`, {
                     method: 'DELETE',
                     headers: {
-                        'Authorization': 'Bearer ' + '{{ auth()->user()->createToken("dashboard")->plainTextToken }}',
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
+                    },
+                    credentials: 'same-origin'
                 })
                 .then(response => {
                     if (response.ok) {
@@ -299,86 +251,5 @@
         function closeModal() {
             document.getElementById('scriptModal').classList.add('hidden');
         }
-        
-        function generateScript() {
-            document.getElementById('generateModal').classList.remove('hidden');
-        }
-        
-        function closeGenerateModal() {
-            document.getElementById('generateModal').classList.add('hidden');
-            document.getElementById('generateForm').reset();
-        }
-        
-        function triggerGeneration() {
-            const form = document.getElementById('generateForm');
-            const formData = new FormData(form);
-            const data = {
-                user_uuid: '{{ auth()->user()->id }}',
-                type: formData.get('type'),
-                parameters: {
-                    topic: formData.get('topic'),
-                    instructions: formData.get('instructions')
-                }
-            };
-            
-            // Show loading state
-            const btnText = document.getElementById('generateBtnText');
-            const spinner = document.getElementById('generateSpinner');
-            btnText.textContent = 'Generating...';
-            spinner.classList.remove('hidden');
-            
-            fetch('https://n8n.musamin.app/webhook/trigger-generation', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    user_uuid: data.user_uuid,
-                    type: data.type,
-                    topic: data.parameters.topic,
-                    instructions: data.parameters.instructions,
-                    triggered_at: new Date().toISOString()
-                })
-            })
-            .then(response => response.json())
-            .then(result => {
-                console.log('Script generation triggered:', result);
-                closeGenerateModal();
-                showNotification('Script generation started! Check back in a few minutes.', 'success');
-                setTimeout(() => {
-                    location.reload();
-                }, 3000);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('Error connecting to n8n. Please try again.', 'error');
-            })
-            .finally(() => {
-                // Reset button state
-                btnText.textContent = 'Generate Script';
-                spinner.classList.add('hidden');
-            });
-        }
-        
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 ${
-                type === 'success' ? 'bg-green-600' : 'bg-red-600'
-            }`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 5000);
-        }
-        
-        // Close modal on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-                closeGenerateModal();
-            }
-        });
     </script>
 </x-app-layout>
