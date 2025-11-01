@@ -41,8 +41,7 @@ services:
     environment:
       - PMA_HOST=mysql
       - PMA_PORT=3306
-      - PMA_USER=mysql
-      - PMA_PASSWORD=Musamin@70
+      - PMA_ARBITRARY=1
     ports:
       - "8081:80"
     depends_on:
