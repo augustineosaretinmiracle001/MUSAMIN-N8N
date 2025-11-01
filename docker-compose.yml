@@ -16,6 +16,7 @@ services:
       - DB_DATABASE=default
       - DB_USERNAME=mysql
       - DB_PASSWORD=Musamin@70
+      - N8N_API_KEY=n8n_secure_key_2025_musamin_app_integration
     depends_on:
       - mysql
     networks:
