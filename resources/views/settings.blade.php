@@ -251,7 +251,7 @@
                             
                             <!-- Schedules List -->
                             <div id="schedulesList" class="space-y-3">
-                                @forelse(auth()->user()->schedules as $schedule)
+                                @forelse(auth()->user()->schedules ?? [] as $schedule)
                                     <div class="bg-white border border-gray-200 rounded-lg p-4">
                                         <div class="flex items-center justify-between">
                                             <div class="flex-1">
