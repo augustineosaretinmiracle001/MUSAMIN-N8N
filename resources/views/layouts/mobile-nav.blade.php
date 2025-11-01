@@ -17,9 +17,9 @@
         </div>
         
         <!-- User Avatar -->
-        <div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
+        <a href="{{ route('profile.edit') }}" class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center hover:bg-indigo-700 transition-colors">
             <span class="text-sm font-medium text-white">{{ substr(Auth::user()->name, 0, 1) }}</span>
-        </div>
+        </a>
     </div>
 </div>
 

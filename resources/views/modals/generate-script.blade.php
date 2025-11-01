@@ -13,15 +13,45 @@
             <div class="p-6">
                 <form @submit.prevent="triggerGeneration()" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Script Type</label>
-                        <select x-model="form.type" @change="handleTypeChange()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            <option value="youtube_script">YouTube Script</option>
-                            <option value="blog_post">Blog Post</option>
-                            <option value="social_media">Social Media Content</option>
-                            <option value="email_newsletter">Email Newsletter</option>
-                            <option value="others">Others</option>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Platform</label>
+                        <select x-model="form.platform" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <option value="">Select Platform</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="blog">Blog/Website</option>
+                            <option value="podcast">Podcast</option>
+                            <option value="email">Email</option>
+                            <option value="other">Other</option>
                         </select>
-                        <input x-show="form.type === 'others'" x-model="form.customType" type="text" placeholder="Enter your custom script type (e.g., Podcast Script, Video Ad, etc.)" 
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Content Niche</label>
+                        <select x-model="form.niche" @change="handleNicheChange()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <option value="">Select Niche</option>
+                            <option value="storytelling">Storytelling</option>
+                            <option value="education">Education</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="business">Business</option>
+                            <option value="technology">Technology</option>
+                            <option value="health_fitness">Health & Fitness</option>
+                            <option value="lifestyle">Lifestyle</option>
+                            <option value="travel">Travel</option>
+                            <option value="food">Food & Cooking</option>
+                            <option value="fashion">Fashion & Beauty</option>
+                            <option value="gaming">Gaming</option>
+                            <option value="music">Music</option>
+                            <option value="sports">Sports</option>
+                            <option value="finance">Finance</option>
+                            <option value="motivation">Motivation</option>
+                            <option value="comedy">Comedy</option>
+                            <option value="news">News & Current Events</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <input x-show="form.niche === 'custom'" x-model="form.customNiche" type="text" placeholder="Enter your specific niche" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 mt-2" x-transition>
                     </div>
                     <div>
@@ -58,8 +88,9 @@
             open: false,
             loading: false,
             form: {
-                type: 'youtube_script',
-                customType: '',
+                platform: '',
+                niche: '',
+                customNiche: '',
                 topic: '',
                 instructions: ''
             },
@@ -77,17 +108,18 @@
             
             resetForm() {
                 this.form = {
-                    type: 'youtube_script',
-                    customType: '',
+                    platform: '',
+                    niche: '',
+                    customNiche: '',
                     topic: '',
                     instructions: ''
                 };
                 this.loading = false;
             },
             
-            handleTypeChange() {
-                if (this.form.type !== 'others') {
-                    this.form.customType = '';
+            handleNicheChange() {
+                if (this.form.niche !== 'custom') {
+                    this.form.customNiche = '';
                 }
             },
             
@@ -102,7 +134,8 @@
                         },
                         body: JSON.stringify({
                             user_uuid: '{{ auth()->user()->id }}',
-                            type: this.form.type === 'others' ? this.form.customType : this.form.type,
+                            platform: this.form.platform,
+                            niche: this.form.niche === 'custom' ? this.form.customNiche : this.form.niche,
                             topic: this.form.topic,
                             instructions: this.form.instructions,
                             triggered_at: new Date().toISOString()

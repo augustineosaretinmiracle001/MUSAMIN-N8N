@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::create('user_preferences', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
-            $table->string('niche')->default('general');
-            $table->string('tone')->default('neutral');
-            $table->string('style')->default('standard');
+            $table->string('content_niche')->nullable();
+            $table->string('writing_tone')->nullable();
+            $table->string('writing_style')->nullable();
             $table->string('target_audience')->nullable();
             $table->text('custom_instructions')->nullable();
             $table->timestamps();

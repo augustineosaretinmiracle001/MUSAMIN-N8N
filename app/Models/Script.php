@@ -14,8 +14,8 @@ class Script extends Model
         'user_id',
         'title',
         'content',
-        'niche',
-        'status',
+        'content_niche',
+        'script_status',
         'metadata'
     ];
 

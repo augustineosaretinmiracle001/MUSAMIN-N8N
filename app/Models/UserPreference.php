@@ -12,9 +12,9 @@ class UserPreference extends Model
 
     protected $fillable = [
         'user_id',
-        'niche',
-        'tone',
-        'style',
+        'content_niche',
+        'writing_tone',
+        'writing_style',
         'target_audience',
         'custom_instructions'
     ];

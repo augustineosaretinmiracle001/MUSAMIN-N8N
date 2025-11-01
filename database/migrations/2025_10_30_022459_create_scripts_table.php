@@ -13,8 +13,8 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->string('title');
             $table->longText('content');
-            $table->string('niche')->default('general');
-            $table->string('status')->default('pending');
+            $table->string('content_niche')->nullable();
+            $table->string('script_status')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
         });

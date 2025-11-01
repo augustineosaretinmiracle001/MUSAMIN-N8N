@@ -13,12 +13,32 @@ class SettingsController extends Controller
         return view('settings');
     }
 
+    public function preferences()
+    {
+        return view('settings.preferences');
+    }
+
+    public function api()
+    {
+        return view('settings.api');
+    }
+
+    public function schedules()
+    {
+        return view('settings.schedules');
+    }
+
+    public function account()
+    {
+        return view('settings.account');
+    }
+
     public function updatePreferences(Request $request)
     {
         $validated = $request->validate([
-            'niche' => 'required|string|max:255',
-            'tone' => 'required|string|max:255',
-            'style' => 'required|string|max:255',
+            'content_niche' => 'nullable|string|max:255',
+            'writing_tone' => 'nullable|string|max:255',
+            'writing_style' => 'nullable|string|max:255',
             'target_audience' => 'nullable|string|max:255',
             'custom_instructions' => 'nullable|string'
         ]);
@@ -30,7 +50,7 @@ class SettingsController extends Controller
             $validated
         );
 
-        return redirect()->route('settings')->with('success', 'Preferences updated successfully!');
+        return redirect()->route('settings.preferences')->with('success', 'Preferences updated successfully!');
     }
 
     public function generateToken(Request $request)
