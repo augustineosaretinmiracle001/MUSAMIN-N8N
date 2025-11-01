@@ -62,7 +62,7 @@ class ScriptController extends Controller
         ]);
 
         $metadata = $validated['metadata'] ?? [];
-        $metadata['generation_type'] = $metadata['generation_type'] ?? 'auto_generated';
+        $metadata['generation_type'] = $metadata['generation_type'] ?? 'auto';
         $metadata['status'] = 'done';
         $metadata['word_count'] = str_word_count($validated['content']);
         $metadata['estimated_duration'] = ceil($metadata['word_count'] / 150) . ' minutes';
@@ -103,7 +103,7 @@ class ScriptController extends Controller
         }
 
         $metadata = $validated['metadata'] ?? [];
-        $metadata['generation_type'] = $metadata['generation_type'] ?? 'auto_generated';
+        $metadata['generation_type'] = $metadata['generation_type'] ?? 'auto';
         $metadata['status'] = 'done';
         $metadata['word_count'] = str_word_count($validated['content']);
         $metadata['estimated_duration'] = ceil($metadata['word_count'] / 150) . ' minutes';
