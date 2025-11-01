@@ -26,7 +26,6 @@ Route::middleware('auth')->group(function () {
     // Scripts page
     Route::get('/scripts', [App\Http\Controllers\ScriptController::class, 'index'])->name('scripts');
     Route::get('/scripts/{script}', [App\Http\Controllers\ScriptController::class, 'show'])->name('scripts.show');
-    Route::delete('/scripts/{script}', [App\Http\Controllers\ScriptController::class, 'destroy'])->name('scripts.destroy');
 });
 
 require __DIR__.'/auth.php';

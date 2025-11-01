@@ -1,46 +1,27 @@
 <x-app-layout>
-    <div class="flex items-center justify-between mb-8">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">My Scripts</h1>
-            <p class="text-gray-600 mt-1">Manage all your generated scripts</p>
+    <div class="mb-6">
+        <div class="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0 mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">My Scripts</h1>
+                <p class="text-gray-600 mt-1">Manage all your generated scripts</p>
+            </div>
+            
+            <button onclick="generateScript()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                Generate New Script
+            </button>
         </div>
         
-        <button onclick="generateScript()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-            </svg>
-            Generate New Script
-        </button>
-    </div>
-
-    <!-- Filter and Search -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                <div class="relative">
-                    <input type="text" id="searchInput" placeholder="Search scripts..." 
-                           class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                    <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </div>
-                
-                <select id="nicheFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="">All Niches</option>
-                    <option value="general">General</option>
-                    <option value="philosophy">Philosophy</option>
-                    <option value="technology">Technology</option>
-                    <option value="business">Business</option>
-                    <option value="lifestyle">Lifestyle</option>
-                    <option value="education">Education</option>
-                </select>
-                
-                <select id="statusFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="generated">Generated</option>
-                    <option value="failed">Failed</option>
-                </select>
+        <!-- Search and Count -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+            <div class="relative flex-1 max-w-md">
+                <input type="text" id="searchInput" placeholder="Search scripts..." 
+                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
             </div>
             
             <div class="flex items-center space-x-2">
@@ -84,10 +65,6 @@
                                     <button onclick="downloadScript('{{ $script->title }}', '{{ addslashes($script->content) }}')" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         Download as TXT
                                     </button>
-                                    <hr class="my-1">
-                                    <button onclick="deleteScript('{{ $script->id }}')" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                                        Delete Script
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -119,35 +96,9 @@
         @endif
     </div>
 
-    <!-- Script View Modal -->
-    <div id="scriptModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
-                <div class="flex items-center justify-between p-6 border-b">
-                    <h3 id="modalTitle" class="text-lg font-semibold text-gray-900"></h3>
-                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="p-6 overflow-y-auto max-h-[70vh]">
-                    <div id="modalContent" class="prose max-w-none"></div>
-                </div>
-                <div class="flex items-center justify-end space-x-3 p-6 border-t bg-gray-50">
-                    <button onclick="copyModalContent()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                        Copy Content
-                    </button>
-                    <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                        Close
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Include Generate Script Modal -->
+    <!-- Include Modals -->
     @include('modals.generate-script')
+    @include('modals.view-script')
     
     <!-- Old modal removed -->
     <div id="generateModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
@@ -201,29 +152,20 @@
     </div>
 
     <script>
-        let currentScriptContent = '';
+
         
-        // Search and filter functionality
+        // Search functionality
         document.getElementById('searchInput').addEventListener('input', filterScripts);
-        document.getElementById('nicheFilter').addEventListener('change', filterScripts);
-        document.getElementById('statusFilter').addEventListener('change', filterScripts);
         
         function filterScripts() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const nicheFilter = document.getElementById('nicheFilter').value;
-            const statusFilter = document.getElementById('statusFilter').value;
             const cards = document.querySelectorAll('.script-card');
             
             cards.forEach(card => {
                 const title = card.dataset.title;
-                const niche = card.dataset.niche;
-                const status = card.dataset.status;
-                
                 const matchesSearch = title.includes(searchTerm);
-                const matchesNiche = !nicheFilter || niche === nicheFilter;
-                const matchesStatus = !statusFilter || status === statusFilter;
                 
-                if (matchesSearch && matchesNiche && matchesStatus) {
+                if (matchesSearch) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
@@ -251,33 +193,7 @@
             }
         });
         
-        function viewScript(scriptId) {
-            fetch(`/scripts/${scriptId}`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                credentials: 'same-origin'
-            })
-            .then(response => response.json())
-            .then(script => {
-                document.getElementById('modalTitle').textContent = script.title;
-                document.getElementById('modalContent').innerHTML = `
-                    <div class="mb-4">
-                        <span class="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full mb-2">
-                            ${script.niche}
-                        </span>
-                    </div>
-                    <div class="whitespace-pre-wrap">${script.content}</div>
-                `;
-                currentScriptContent = script.content;
-                document.getElementById('scriptModal').classList.remove('hidden');
-            })
-            .catch(error => {
-                alert('Error loading script');
-                console.error(error);
-            });
-        }
+        // viewScript function is now handled by the view-script modal component
         
         function copyScript(content) {
             navigator.clipboard.writeText(content).then(() => {
@@ -285,45 +201,24 @@
             });
         }
         
-        function copyModalContent() {
-            navigator.clipboard.writeText(currentScriptContent).then(() => {
-                showNotification('Script copied to clipboard!', 'success');
-            });
-        }
+
         
         function downloadScript(title, content) {
+            // Clean the content by removing extra slashes
+            const cleanContent = content.replace(/\\n/g, '\n').replace(/\\'/g, "'").replace(/\\"/g, '"');
+            
             const element = document.createElement('a');
-            const file = new Blob([content], {type: 'text/plain'});
+            const file = new Blob([cleanContent], {type: 'text/plain'});
             element.href = URL.createObjectURL(file);
-            element.download = `${title}.txt`;
+            element.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
             document.body.appendChild(element);
             element.click();
             document.body.removeChild(element);
+            
+            showNotification('Script downloaded successfully!', 'success');
         }
         
-        function deleteScript(scriptId) {
-            if (confirm('Are you sure you want to delete this script?')) {
-                fetch(`/scripts/${scriptId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    credentials: 'same-origin'
-                })
-                .then(response => {
-                    if (response.ok) {
-                        location.reload();
-                    } else {
-                        alert('Error deleting script');
-                    }
-                });
-            }
-        }
-        
-        function closeModal() {
-            document.getElementById('scriptModal').classList.add('hidden');
-        }
+
         
         // generateScript function is now handled by Alpine.js modal
         

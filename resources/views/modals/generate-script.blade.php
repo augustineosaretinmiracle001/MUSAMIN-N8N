@@ -1,7 +1,7 @@
 <!-- Generate Script Modal -->
 <div x-data="generateScriptModal()" x-show="open" x-cloak class="fixed inset-0 bg-black bg-opacity-50 z-50" @keydown.escape="closeModal()">
     <div class="flex items-center justify-center min-h-screen p-4">
-        <div @click.away="closeModal()" class="bg-white rounded-lg max-w-md w-full" x-transition>
+        <div class="bg-white rounded-lg max-w-md lg:max-w-2xl w-full" x-transition>
             <div class="flex items-center justify-between p-6 border-b">
                 <h3 class="text-lg font-semibold text-gray-900">Generate New Script</h3>
                 <button @click="closeModal()" class="text-gray-400 hover:text-gray-600">
@@ -14,12 +14,15 @@
                 <form @submit.prevent="triggerGeneration()" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Script Type</label>
-                        <select x-model="form.type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <select x-model="form.type" @change="handleTypeChange()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                             <option value="youtube_script">YouTube Script</option>
                             <option value="blog_post">Blog Post</option>
                             <option value="social_media">Social Media Content</option>
                             <option value="email_newsletter">Email Newsletter</option>
+                            <option value="others">Others</option>
                         </select>
+                        <input x-show="form.type === 'others'" x-model="form.customType" type="text" placeholder="Enter your custom script type (e.g., Podcast Script, Video Ad, etc.)" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 mt-2" x-transition>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Topic (Optional)</label>
@@ -33,11 +36,8 @@
                     </div>
                 </form>
             </div>
-            <div class="flex items-center justify-end space-x-3 p-6 border-t bg-gray-50">
-                <button @click="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                    Cancel
-                </button>
-                <button @click="triggerGeneration()" :disabled="loading" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50">
+            <div class="flex items-center justify-end p-6 border-t bg-gray-50">
+                <button @click="triggerGeneration()" :disabled="loading" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50">
                     <span x-show="!loading">Generate Script</span>
                     <span x-show="loading" class="flex items-center">
                         <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
@@ -59,6 +59,7 @@
             loading: false,
             form: {
                 type: 'youtube_script',
+                customType: '',
                 topic: '',
                 instructions: ''
             },
@@ -75,10 +76,17 @@
             resetForm() {
                 this.form = {
                     type: 'youtube_script',
+                    customType: '',
                     topic: '',
                     instructions: ''
                 };
                 this.loading = false;
+            },
+            
+            handleTypeChange() {
+                if (this.form.type !== 'others') {
+                    this.form.customType = '';
+                }
             },
             
             async triggerGeneration() {
@@ -92,7 +100,7 @@
                         },
                         body: JSON.stringify({
                             user_uuid: '{{ auth()->user()->id }}',
-                            type: this.form.type,
+                            type: this.form.type === 'others' ? this.form.customType : this.form.type,
                             topic: this.form.topic,
                             instructions: this.form.instructions,
                             triggered_at: new Date().toISOString()
