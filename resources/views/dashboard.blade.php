@@ -1,18 +1,9 @@
 <x-app-layout>
     <!-- Page Header -->
     <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center">
-            <!-- Mobile Menu Button -->
-            <button onclick="toggleMobileMenu()" class="lg:hidden mr-4 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-            
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-                <p class="text-gray-600 mt-1">Welcome back, {{ Auth::user()->name }}</p>
-            </div>
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+            <p class="text-gray-600 mt-1">Welcome back, {{ Auth::user()->name }}</p>
         </div>
         <div class="flex space-x-2 sm:space-x-3">
             <button onclick="generateScript()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 sm:px-4 rounded-lg flex items-center transition-colors" title="Generate Script">

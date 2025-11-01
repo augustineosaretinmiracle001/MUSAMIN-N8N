@@ -1,16 +1,8 @@
 <x-app-layout>
     <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center">
-            <button onclick="toggleMobileMenu()" class="lg:hidden mr-4 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-            
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900">Settings</h1>
-                <p class="text-gray-600 mt-1">Manage your preferences and n8n integration</p>
-            </div>
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Settings</h1>
+            <p class="text-gray-600 mt-1">Manage your preferences and n8n integration</p>
         </div>
     </div>
 
