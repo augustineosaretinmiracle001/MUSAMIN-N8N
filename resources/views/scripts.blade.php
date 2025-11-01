@@ -257,11 +257,12 @@
         });
         
         function viewScript(scriptId) {
-            fetch(`/api/scripts/${scriptId}`, {
+            fetch(`/scripts/${scriptId}`, {
                 headers: {
-                    'Authorization': 'Bearer ' + '{{ auth()->user()->createToken("dashboard")->plainTextToken }}',
-                    'Accept': 'application/json'
-                }
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                credentials: 'same-origin'
             })
             .then(response => response.json())
             .then(script => {
@@ -307,13 +308,13 @@
         
         function deleteScript(scriptId) {
             if (confirm('Are you sure you want to delete this script?')) {
-                fetch(`/api/scripts/${scriptId}`, {
+                fetch(`/scripts/${scriptId}`, {
                     method: 'DELETE',
                     headers: {
-                        'Authorization': 'Bearer ' + '{{ auth()->user()->createToken("dashboard")->plainTextToken }}',
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
+                    },
+                    credentials: 'same-origin'
                 })
                 .then(response => {
                     if (response.ok) {

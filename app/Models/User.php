@@ -49,11 +49,6 @@ class User extends Authenticatable
         ];
     }
 
-    public function workflows(): HasMany
-    {
-        return $this->hasMany(Workflow::class);
-    }
-
     public function scripts(): HasMany
     {
         return $this->hasMany(Script::class);

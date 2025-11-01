@@ -42,18 +42,10 @@ class ScriptController extends Controller
      */
     public function saveScript(Request $request, string $user_uuid): JsonResponse
     {
-        // Debug logging
-        \Log::info('saveScript called with user_uuid: ' . $user_uuid);
-        \Log::info('Request data: ' . json_encode($request->all()));
-        
         $user = User::find($user_uuid);
         
         if (!$user) {
-            \Log::error('User not found with UUID: ' . $user_uuid);
-            // Also try to find any user to see what UUIDs exist
-            $allUsers = User::select('id', 'name')->get();
-            \Log::info('Available users: ' . json_encode($allUsers));
-            return response()->json(['error' => 'User not found', 'uuid_received' => $user_uuid], 404);
+            return response()->json(['error' => 'User not found'], 404);
         }
 
         $validated = $request->validate([
