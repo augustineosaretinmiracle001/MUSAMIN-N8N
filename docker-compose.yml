@@ -1,22 +1,43 @@
 version: '3.8'
 
+x-app-environment: &app-environment
+  - APP_ENV=production
+  - APP_DEBUG=false
+  - APP_KEY=base64:ioxbXKw7LniLXzvrK7aTPulZ4XtlLx2mbcmyGo50CjA=
+  - APP_URL=https://musamin.app
+  - DB_CONNECTION=mysql
+  - DB_HOST=mysql
+  - DB_PORT=3306
+  - DB_DATABASE=default
+  - DB_USERNAME=mysql
+  - DB_PASSWORD=Musamin@70
+  - N8N_API_KEY=n8n_secure_key_2025_musamin_app_integration
+  - QUEUE_CONNECTION=database
+
 services:
   app:
     build: .
     ports:
       - "3000:80"
-    environment:
-      - APP_ENV=production
-      - APP_DEBUG=false
-      - APP_KEY=base64:ioxbXKw7LniLXzvrK7aTPulZ4XtlLx2mbcmyGo50CjA=
-      - APP_URL=https://musamin.app
-      - DB_CONNECTION=mysql
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_DATABASE=default
-      - DB_USERNAME=mysql
-      - DB_PASSWORD=Musamin@70
-      - N8N_API_KEY=n8n_secure_key_2025_musamin_app_integration
+    environment: *app-environment
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  scheduler:
+    build: .
+    command: php artisan schedule:work
+    environment: *app-environment
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  queue:
+    build: .
+    command: php artisan queue:work --sleep=3 --tries=3
+    environment: *app-environment
     depends_on:
       - mysql
     networks:

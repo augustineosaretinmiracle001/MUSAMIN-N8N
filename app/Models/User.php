@@ -58,4 +58,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserPreference::class);
     }
+
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(\App\Models\Schedule::class);
+    }
 }

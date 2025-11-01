@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ScheduleController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -26,6 +27,11 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/generate-token', [App\Http\Controllers\SettingsController::class, 'generateToken']);
     Route::delete('/tokens/{token}', [App\Http\Controllers\SettingsController::class, 'deleteToken']);
+    
+    // Schedule management
+    Route::post('/schedules', [App\Http\Controllers\ScheduleController::class, 'store']);
+    Route::put('/schedules/{schedule}', [App\Http\Controllers\ScheduleController::class, 'update']);
+    Route::delete('/schedules/{schedule}', [App\Http\Controllers\ScheduleController::class, 'destroy']);
 });
 
 // n8n integration endpoints (secured with API key)
