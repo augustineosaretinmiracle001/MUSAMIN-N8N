@@ -28,10 +28,17 @@ class TriggerScheduledGeneration implements ShouldQueue
                 'user_uuid' => $user->id,
                 'type' => 'auto_generated', // Mark as automated
                 'topic' => null, // Auto generation uses preferences
-                'instructions' => $preferences?->custom_instructions ?? '',
+                'instructions' => $preferences?->custom_instructions ?? 'Be relatable to humans',
                 'triggered_at' => now()->toISOString(),
                 'schedule_id' => $this->schedule->id,
-                'schedule_name' => $this->schedule->name
+                'schedule_name' => $this->schedule->name,
+                'preferences' => [
+                    'niche' => $preferences?->niche ?? 'general',
+                    'tone' => $preferences?->tone ?? 'neutral',
+                    'style' => $preferences?->style ?? 'standard',
+                    'target_audience' => $preferences?->target_audience ?? 'general audience',
+                    'custom_instructions' => $preferences?->custom_instructions ?? 'Be relatable to humans'
+                ]
             ];
 
             // Trigger n8n webhook
