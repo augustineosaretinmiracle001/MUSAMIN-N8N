@@ -31,7 +31,7 @@
             </div>
 
             <!-- Main Content -->
-            <div class="flex-1 overflow-y-auto p-4 pt-20 lg:pt-8 lg:p-8">
+            <div class="flex-1 overflow-y-auto p-4 pt-16 lg:pt-8 lg:p-8">
                 {{ $slot }}
             </div>
         </div>

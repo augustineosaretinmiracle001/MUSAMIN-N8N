@@ -97,7 +97,7 @@
                         
                         <div class="flex items-center justify-between text-sm text-gray-500">
                             <span>{{ $script->created_at->diffForHumans() }}</span>
-                            <span>{{ Str::words($script->content, 0, '') ? count(explode(' ', $script->content)) : 0 }} words</span>
+                            <span>{{ str_word_count($script->content) }} words</span>
                         </div>
                     </div>
                 @endforeach
