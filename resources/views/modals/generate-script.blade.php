@@ -14,33 +14,12 @@
                 <form @submit.prevent="triggerGeneration()" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Niche</label>
-                        <select x-model="form.niche" @change="handleNicheChange()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            <option value="">Select Niche</option>
-                            <option value="storytelling">Storytelling</option>
-                            <option value="education">Education</option>
-                            <option value="entertainment">Entertainment</option>
-                            <option value="business">Business</option>
-                            <option value="technology">Technology</option>
-                            <option value="health_fitness">Health & Fitness</option>
-                            <option value="lifestyle">Lifestyle</option>
-                            <option value="travel">Travel</option>
-                            <option value="food">Food & Cooking</option>
-                            <option value="fashion">Fashion & Beauty</option>
-                            <option value="gaming">Gaming</option>
-                            <option value="music">Music</option>
-                            <option value="sports">Sports</option>
-                            <option value="finance">Finance</option>
-                            <option value="motivation">Motivation</option>
-                            <option value="comedy">Comedy</option>
-                            <option value="news">News & Current Events</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                        <input x-show="form.niche === 'custom'" x-model="form.customNiche" type="text" placeholder="Enter your specific niche" 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 mt-2" x-transition>
+                        <input x-model="form.niche" type="text" placeholder="e.g., Storytelling, Education, Business, Technology" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Topic (Optional)</label>
-                        <input x-model="form.topic" type="text" placeholder="Enter a specific topic..." 
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Title (Optional)</label>
+                        <input x-model="form.title" type="text" placeholder="Enter a specific title..." 
                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                     </div>
                     <div>
@@ -78,8 +57,7 @@
             loading: false,
             form: {
                 niche: '',
-                customNiche: '',
-                topic: '',
+                title: '',
                 instructions: ''
             },
             
@@ -97,17 +75,10 @@
             resetForm() {
                 this.form = {
                     niche: '',
-                    customNiche: '',
-                    topic: '',
+                    title: '',
                     instructions: ''
                 };
                 this.loading = false;
-            },
-            
-            handleNicheChange() {
-                if (this.form.niche !== 'custom') {
-                    this.form.customNiche = '';
-                }
             },
             
             async triggerGeneration() {
@@ -121,8 +92,8 @@
                         },
                         body: JSON.stringify({
                             user_uuid: '{{ auth()->user()->id }}',
-                            niche: this.form.niche === 'custom' ? this.form.customNiche : this.form.niche,
-                            topic: this.form.topic,
+                            niche: this.form.niche,
+                            title: this.form.title,
                             instructions: this.form.instructions,
                             triggered_at: new Date().toISOString()
                         })

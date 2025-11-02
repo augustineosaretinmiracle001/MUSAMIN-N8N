@@ -36,16 +36,16 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach(Auth::user()->scripts()->latest()->get() as $script)
                     <div class="script-card bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow" 
-                         data-niche="{{ $script->niche }}" data-status="{{ $script->status }}" data-title="{{ strtolower($script->title) }}">
+                         data-niche="{{ $script->niche }}" data-status="{{ $script->getStatus() }}" data-title="{{ strtolower($script->title) }}">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-center space-x-2">
                                 <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                                     {{ ucfirst($script->niche) }}
                                 </span>
                                 <span class="px-2 py-1 text-xs font-semibold rounded-full 
-                                    {{ $script->status === 'generated' ? 'bg-green-100 text-green-800' : 
-                                       ($script->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
-                                    {{ ucfirst($script->status) }}
+                                    {{ $script->getStatus() === 'done' ? 'bg-green-100 text-green-800' : 
+                                       ($script->getStatus() === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                    {{ ucfirst($script->getStatus()) }}
                                 </span>
                             </div>
                             

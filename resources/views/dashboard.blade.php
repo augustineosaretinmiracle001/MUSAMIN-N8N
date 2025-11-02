@@ -42,7 +42,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">Generated Scripts</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ Auth::user()->scripts()->where('status', 'generated')->count() }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ Auth::user()->scripts()->count() }}</p>
                 </div>
             </div>
         </div>
@@ -93,8 +93,8 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        {{ $script->status === 'generated' ? 'bg-green-100 text-green-800' : ($script->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
-                                        {{ ucfirst($script->status) }}
+                                        {{ $script->getStatus() === 'done' ? 'bg-green-100 text-green-800' : ($script->getStatus() === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
+                                        {{ ucfirst($script->getStatus()) }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
