@@ -21,8 +21,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings/preferences', [App\Http\Controllers\SettingsController::class, 'preferences'])->name('settings.preferences');
     Route::post('/settings/preferences', [App\Http\Controllers\SettingsController::class, 'updatePreferences'])->name('settings.preferences.update');
     Route::get('/settings/api', [App\Http\Controllers\SettingsController::class, 'api'])->name('settings.api');
-    Route::get('/settings/schedules', [App\Http\Controllers\SettingsController::class, 'schedules'])->name('settings.schedules');
-    Route::get('/settings/account', [App\Http\Controllers\SettingsController::class, 'account'])->name('settings.account');
+
     
     // Script generation trigger
     Route::post('/generate-script', [App\Http\Controllers\Api\ScriptController::class, 'triggerGeneration'])->name('generate.script');

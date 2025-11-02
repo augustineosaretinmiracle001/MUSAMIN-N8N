@@ -23,15 +23,7 @@ class SettingsController extends Controller
         return view('settings.api');
     }
 
-    public function schedules()
-    {
-        return view('settings.schedules');
-    }
 
-    public function account()
-    {
-        return view('settings.account');
-    }
 
     public function updatePreferences(Request $request)
     {
